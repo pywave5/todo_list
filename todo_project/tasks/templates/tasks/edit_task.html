@@ -1,0 +1,27 @@
+{% extends 'tasks/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Редактировать задачу</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="title" class="form-label">Название</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ task.title }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="priority" class="form-label">Приоритет</label>
+            <select class="form-control" id="priority" name="priority">
+                <option value="low" {% if task.priority == "low" %}selected{% endif %}>Низкий</option>
+                <option value="medium" {% if task.priority == "medium" %}selected{% endif %}>Средний</option>
+                <option value="high" {% if task.priority == "high" %}selected{% endif %}>Высокий</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <input type="date" class="form-control" id="deadline" name="deadline" value="{{ task.deadline|date:'Y-m-d' }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a href="{% url 'task_list' %}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "tasks/base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Регистрация</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {% if field.errors %}
+                    {{ field|add_class:"form-control is-invalid" }}
+                    <div class="text-danger">
+                        {{ field.errors.0 }}
+                    </div>
+                {% else %}
+                    {{ field|add_class:"form-control" }}
+                {% endif %}
+            </div>
+        {% endfor %}
+        {% if form.errors and request.method == "POST" %}
+        <div class="alert alert-danger">Исправьте ошибки в форме.</div>
+        {% endif %}
+        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+    </form>
+</div>
+{% endblock %}

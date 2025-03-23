@@ -1,0 +1,45 @@
+{% extends 'tasks/base.html' %}
+{% load static %}
+
+{% block title %}Добавить задачу{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="mb-4">Добавить задачу</h1>
+
+        <form method="post" class="card p-4 shadow-sm" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                {{ form.title.label_tag }}
+                <input type="text" name="title" class="form-control" placeholder="Название задачи" required>
+            </div>
+
+            <div class="mb-3">
+                {{ form.description.label_tag }}
+                <textarea name="description" class="form-control" placeholder="Описание (необязательно)"></textarea>
+            </div>
+
+            <div class="mb-3">
+                {{ form.priority.label_tag }}
+                <select name="priority" class="form-select">
+                    <option value="low">Низкий</option>
+                    <option value="medium">Средний</option>
+                    <option value="high">Высокий</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                {{ form.deadline.label_tag }}
+                <input type="date" name="deadline" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                {{ form.image.label_tag }}
+                <input type="file" name="image" class="form-control" accept="image/*">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Добавить</button>
+        </form>
+    </div>
+{% endblock %}

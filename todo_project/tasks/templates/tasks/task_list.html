@@ -1,0 +1,103 @@
+{% extends 'tasks/base.html' %}
+
+{% block title %}Список задач{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Мои задачи</h1>
+
+    {% if tasks %}
+        <ul class="list-group">
+            {% for task in tasks %}
+                <li class="list-group-item
+                    {% if task.priority == 'high' %} list-group-item-danger
+                    {% elif task.priority == 'medium' %} list-group-item-warning
+                    {% else %} list-group-item-info
+                    {% endif %}
+                    d-flex justify-content-between align-items-center">
+
+                    <div class="d-flex align-items-center">
+                        {% if task.image %}
+                            <img src="{{ task.image.url }}" alt="Картинка задачи"
+                                 class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                        {% endif %}
+                        <div>
+                            <a href="#" class="task-link" data-bs-toggle="modal" data-bs-target="#taskModal"
+                               data-title="{{ task.title }}"
+                               data-description="{{ task.description|default:'Описание отсутствует'|escape }}"
+                               data-priority="{% if task.priority == 'high' %}Высокий{% elif task.priority == 'medium' %}Средний{% else %}Низкий{% endif %}"
+                               data-deadline="{{ task.deadline }}"
+                               data-image="{% if task.image %}{{ task.image.url }}{% endif %}">
+                                {% if task.completed %}
+                                    ✅ <del>{{ task.title }}</del>
+                                {% else %}
+                                    🟡 {{ task.title }}
+                                {% endif %}
+                            </a>
+                            <br>
+                            <small>Дедлайн: {{ task.deadline|default:"Не задан" }}</small>
+                        </div>
+                    </div>
+
+                    <div>
+                        {% if not task.completed %}
+                            <a href="{% url 'complete_task' task.id %}" class="btn btn-success btn-sm">✔ Выполнить</a>
+                        {% endif %}
+                        <a href="{% url 'delete_task' task.id %}" class="btn btn-danger btn-sm">🗑 Удалить</a>
+                        <a href="{% url 'edit_task' task.id %}" class="btn btn-warning btn-sm">✏️ Редактировать</a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="alert alert-warning">Задач пока нет!</p>
+    {% endif %}
+
+    <div class="modal fade" id="taskModal" tabindex="-1" aria-labelledby="taskModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="background-color: #1e1e1e; color: white; border-radius: 10px;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="taskModalLabel">Задача</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h4 id="modalTaskTitle" class="fw-bold"></h4>
+                    <p id="modalTaskDescription" class="text-muted"></p>
+                    <p id="modalTaskPriority"></p>
+                    <p id="modalTaskDeadline"></p>
+                    <img id="modalTaskImage" src="" alt="Изображение задачи"
+                         class="img-fluid rounded d-none mt-3">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var taskModal = document.getElementById("taskModal");
+
+        taskModal.addEventListener("show.bs.modal", function (event) {
+            var button = event.relatedTarget;
+
+            var title = button.getAttribute("data-title");
+            var description = button.getAttribute("data-description");
+            var image = button.getAttribute("data-image");
+            var priority = button.getAttribute("data-priority");
+            var deadline = button.getAttribute("data-deadline");
+
+            document.getElementById("modalTaskTitle").textContent = title;
+            document.getElementById("modalTaskDescription").textContent = description;
+
+            document.getElementById("modalTaskPriority").textContent = "Приоритет: " + priority;
+            document.getElementById("modalTaskDeadline").textContent = "Дедлайн: " + (deadline ? deadline : "Не задан");
+
+            var modalImage = document.getElementById("modalTaskImage");
+            if (image) {
+                modalImage.src = image;
+                modalImage.classList.remove("d-none");
+            } else {
+                modalImage.classList.add("d-none");
+            }
+        });
+    });
+    </script>
+{% endblock %}
